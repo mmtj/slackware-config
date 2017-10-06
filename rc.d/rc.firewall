@@ -1,0 +1,37 @@
+#!/bin/sh
+
+rules="/etc/iptables/rules.ipv4"
+
+start () {
+	iptables-restore < $rules
+}
+
+stop () {
+	iptables -F
+	iptables -X
+	iptables -t nat -F
+	iptables -t nat -X
+	iptables -P INPUT ACCEPT	
+	iptables -P OUTPUT ACCEPT	
+	iptables -P FORWARD ACCEPT	
+}
+
+case "$1" in
+  start)
+	echo "Setting iptables rules..."
+	start	
+	;;
+  stop)
+	echo "Clearing iptables rules..."
+	stop	
+	;;
+  restart)
+	stop 
+	start
+	;;
+  *)
+	echo "Usage: rc.firewall {start|stop|restart}"
+	exit 1
+esac
+
+exit 0
